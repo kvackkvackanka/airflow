@@ -19,7 +19,7 @@
 """Remove id column from xcom
 
 Revision ID: bbf4a7ad0465
-Revises: cf5dc11e79ad
+Revises: a43123bc7c24
 Create Date: 2019-10-29 13:53:09.445943
 
 """
@@ -30,7 +30,7 @@ from sqlalchemy.engine.reflection import Inspector
 
 # revision identifiers, used by Alembic.
 revision = 'bbf4a7ad0465'
-down_revision = 'cf5dc11e79ad'
+down_revision = 'a43123bc7c24'
 branch_labels = None
 depends_on = None
 
@@ -40,12 +40,23 @@ def upgrade():
     conn = op.get_bind()
     inspector = Inspector.from_engine(conn)
 
+    if conn.dialect.name == 'mssql':
+        conn.execute("SET time_zone = '+00:00'")
+        op.alter_column('task_fail', 'execution_date', existing_type=mysql.TIMESTAMP(fsp=6), nullable=False)
+        op.alter_column('xcom', 'execution_date', existing_type=mysql.TIMESTAMP(fsp=6), nullable=False)
+        op.alter_column('xcom', 'timestamp', existing_type=mysql.TIMESTAMP(fsp=6), nullable=False)
+
+
     with op.batch_alter_table('xcom') as bop:
         xcom_columns = [col.get('name') for col in inspector.get_columns("xcom")]
         if "id" in xcom_columns:
             pk_name = inspector.get_pk_constraint("xcom")["name"]
             if conn.dialect.name == "mssql":
                 bop.drop_constraint(pk_name, type_='primary')
+                bop.alter_column('xcom', 'dag_id', nullable=False)
+                bop.alter_column('xcom', 'task_id', nullable=False)
+                bop.alter_column('xcom', 'key', nullable=False)
+                bop.alter_column('xcom', 'execution_date', nullable=False)
             bop.drop_column('id')
             bop.drop_index('idx_xcom_dag_task_date')
             bop.create_primary_key('pk_xcom', ['dag_id', 'task_id', 'key', 'execution_date'])
