@@ -24,6 +24,7 @@ Create Date: 2018-06-17 10:16:31.412131
 """
 from alembic import op
 from sqlalchemy.dialects import mysql
+from sqlalchemy.engine.reflection import Inspector
 
 # revision identifiers, used by Alembic.
 revision = 'a43123bc7c24'
