@@ -23,7 +23,7 @@ Create Date: 2018-06-17 10:16:31.412131
 
 """
 from alembic import op
-from sqlalchemy.dialects import mysql
+from sqlalchemy.dialects import mssql
 from sqlalchemy.engine.reflection import Inspector
 
 # revision identifiers, used by Alembic.
@@ -42,7 +42,7 @@ def upgrade():
         inspector = Inspector.from_engine(conn)
         pk_name = inspector.get_pk_constraint('xcom')['name']
         with op.batch_alter_table('xcom') as bop:
-            bop.alter_column('key', default='return_value', nullable=False)
+            bop.alter_column('key', existing_type=mssql.VARCHAR(512), nullable=False)
             bop.drop_constraint(pk_name, type_='primary')
 
 def downgrade():
@@ -52,4 +52,4 @@ def downgrade():
     if conn.dialect.name == 'mssql':
         with op.batch_alter_table('xcom') as bop:
             bop.create_constraint('pk_key', type_='primary')
-            bop.alter_column('xcom', 'key', nullable=True)
+            bop.alter_column('key', existing_type=mssql.VARCHAR(512), nullable=True)
