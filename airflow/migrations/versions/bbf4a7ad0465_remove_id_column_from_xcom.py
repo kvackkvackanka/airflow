@@ -26,6 +26,7 @@ Create Date: 2019-10-29 13:53:09.445943
 
 from alembic import op
 from sqlalchemy import Column, Integer
+from sqlalchemy.dialects import mssql
 from sqlalchemy.engine.reflection import Inspector
 
 # revision identifiers, used by Alembic.
