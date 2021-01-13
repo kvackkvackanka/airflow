@@ -51,7 +51,7 @@ def upgrade():
             bop.drop_column('id')
             bop.drop_index('idx_xcom_dag_task_date')
 
-            if conn.dialect.name == "mssql"
+            if conn.dialect.name == "mssql":
                 bop.alter_column('key', existing_type=mssql.VARCHAR(512), nullable=False)
                 bop.alter_column('execution_date', existing_type=mssql.DATETIME2(), nullable=False)
                 
