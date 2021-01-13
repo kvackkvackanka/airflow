@@ -42,9 +42,19 @@ def upgrade():
 
     with op.batch_alter_table('xcom') as bop:
         xcom_columns = [col.get('name') for col in inspector.get_columns("xcom")]
+
         if "id" in xcom_columns:
+            if conn.dialect.name == 'mssql':
+                pk_name = inspector.get_pk_constraint('xcom')['name']
+                bop.drop_constraint(pk_name, type_='primary')
+
             bop.drop_column('id')
             bop.drop_index('idx_xcom_dag_task_date')
+
+            if conn.dialect.name == "mssql"
+                bop.alter_column('key', existing_type=mssql.VARCHAR(512), nullable=False)
+                bop.alter_column('execution_date', existing_type=mssql.DATETIME2(), nullable=False)
+                
             bop.create_primary_key('pk_xcom', ['dag_id', 'task_id', 'key', 'execution_date'])
 
 

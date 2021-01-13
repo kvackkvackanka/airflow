@@ -36,14 +36,7 @@ depends_on = None
 
 def upgrade():
     """Apply Make key column nullabke and drop PK constraint in xcom"""
-    conn = op.get_bind()
-
-    if conn.dialect.name == 'mssql':
-        inspector = Inspector.from_engine(conn)
-        pk_name = inspector.get_pk_constraint('xcom')['name']
-        with op.batch_alter_table('xcom') as bop:
-            bop.alter_column('key', existing_type=mssql.VARCHAR(512), nullable=False)
-            bop.drop_constraint(pk_name, type_='primary')
+    pass
 
 def downgrade():
     """Unapply Make key column nullabke and drop PK constraint in xcom"""
