@@ -80,7 +80,7 @@ def upgrade():
 
     op.execute(
         "UPDATE dag SET concurrency={}, has_task_concurrency_limits={} where concurrency IS NULL".format(
-            concurrency, 1 if is_sqlite else sa.true()
+            concurrency, 1 if (is_sqlite or is_mssql) else sa.true()
         )
     )
 
