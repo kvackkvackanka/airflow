@@ -45,10 +45,10 @@ def upgrade():
 
     if is_mysql:
         timestamp = mysql.TIMESTAMP(fsp=6, timezone=True)
-    elif is_mssql
-        mssql.DATETIMEOFFSET(precision=6)
+    elif is_mssql:
+        timestamp = mssql.DATETIMEOFFSET(precision=6)
     else:
-        sa.TIMESTAMP(timezone=True)
+        timestamp = sa.TIMESTAMP(timezone=True)
 
 
     if is_sqlite:
