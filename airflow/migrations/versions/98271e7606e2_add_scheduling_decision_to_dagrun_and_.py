@@ -41,7 +41,7 @@ def upgrade():
     conn = op.get_bind()  # pylint: disable=no-member
     is_mysql = bool(conn.dialect.name == "mysql")
     is_sqlite = bool(conn.dialect.name == "sqlite")
-    is_mssql = bool(conn.dialect_name == "mssql")
+    is_mssql = bool(conn.dialect.name == "mssql")
 
     if is_mysql:
         timestamp = mysql.TIMESTAMP(fsp=6, timezone=True)
