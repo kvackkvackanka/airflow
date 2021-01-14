@@ -27,6 +27,7 @@ Create Date: 2020-10-01 12:13:32.968148
 import sqlalchemy as sa
 from alembic import op
 from sqlalchemy.dialects import mysql
+from sqlalchemy.dialects import mssql
 
 # revision identifiers, used by Alembic.
 revision = '98271e7606e2'
@@ -40,7 +41,15 @@ def upgrade():
     conn = op.get_bind()  # pylint: disable=no-member
     is_mysql = bool(conn.dialect.name == "mysql")
     is_sqlite = bool(conn.dialect.name == "sqlite")
-    timestamp = sa.TIMESTAMP(timezone=True) if not is_mysql else mysql.TIMESTAMP(fsp=6, timezone=True)
+    is_mssql = bool(conn.dialect_name == "mssql")
+
+    if is_mysql:
+        timestamp = mysql.TIMESTAMP(fsp=6, timezone=True)
+    elif is_mssql
+        mssql.DATETIMEOFFSET(precision=6)
+    else:
+        sa.TIMESTAMP(timezone=True)
+
 
     if is_sqlite:
         op.execute("PRAGMA foreign_keys=off")
