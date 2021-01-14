@@ -37,10 +37,20 @@ depends_on = None
 def upgrade():
     """Apply add unique constraint to conn_id and set it as non-nullable"""
     try:
-        with op.batch_alter_table('connection') as batch_op:
-            batch_op.create_unique_constraint(constraint_name="unique_conn_id", columns=["conn_id"])
 
-            batch_op.alter_column("conn_id", nullable=False, existing_type=sa.String(250))
+        conn = op.get_bind()
+
+        with op.batch_alter_table('connection') as batch_op:
+            if conn.dialect.name == "mssql":
+                batch_op.alter_column("conn_id", nullable=False, existing_type=sa.String(250))
+                batch_op.create_unique_constraint(constraint_name="unique_conn_id", columns=["conn_id"])
+
+            else:    
+                batch_op.create_unique_constraint(constraint_name="unique_conn_id", columns=["conn_id"])
+                batch_op.alter_column("conn_id", nullable=False, existing_type=sa.String(250))
+
+
+
     except sa.exc.IntegrityError:
         raise Exception("Make sure there are no duplicate connections with the same conn_id or null values")
 
